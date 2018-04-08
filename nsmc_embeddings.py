@@ -76,8 +76,7 @@ def save_word2vec_format(glove, filename):
 '''
 
 
-def create_word_embddings(tokens, model_type, params):
-    file_suffix =str(list(params.values()))
+def create_word_embddings(tokens, model_type, params, file_suffix):
     if(model_type == "word2vec"):
         model = Word2Vec(tokens, **params)
         word_vectors = model.wv
@@ -291,7 +290,7 @@ def main():
 
     for params in params_list:
         file_suffix = str(list(params.values()))
-        create_word_embddings(tokens=tokens, model_type=MODEL, params=params)
+        create_word_embddings(tokens=tokens, model_type=MODEL, params=params, file_suffix=file_suffix)
         # compute embedding matrix
         word_vectors = load_word_vectors("./embeddings/"+MODE+"_"+MODEL+"_nsmc_"+file_suffix)
         embedding_matrix = compute_embedding_matrix(word_vectors=word_vectors, embedding_dimension=params['size'], word_index=word_index)
