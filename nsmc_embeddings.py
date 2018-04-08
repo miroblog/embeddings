@@ -2,8 +2,8 @@ PATH = "./nsmc/"
 ENTIRE_FILE = 'ratings.txt'
 TRAIN_FILE = "ratings_train.txt"
 TEST_FILE = "ratings_test.txt"
-MODE = "SYLLABLE"
-MODEL = "fastText"
+MODE = "SYLLABLE" # WORD, MORPHEME, JAMO
+MODEL = "fastText" # word2vec, glove
 
 # MAX_SEQUENCE_LENGTH = 50
 # EMBEDDING_DIM = 300
