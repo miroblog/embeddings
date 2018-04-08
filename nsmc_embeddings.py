@@ -2,11 +2,11 @@ PATH = "./nsmc/"
 ENTIRE_FILE = 'ratings.txt'
 TRAIN_FILE = "ratings_train.txt"
 TEST_FILE = "ratings_test.txt"
-
 MODE = "SYLLABLE"
 MODEL = "fastText"
-MAX_SEQUENCE_LENGTH = 50
-EMBEDDING_DIM = 300
+
+# MAX_SEQUENCE_LENGTH = 50
+# EMBEDDING_DIM = 300
 
 from tqdm import tqdm
 import re
@@ -98,16 +98,16 @@ def create_word_embddings(tokens, model_type, params):
     else:
         raise ValueError
 
-def create_model(word_index, embed_dim, embedding_matrix):
+def create_model(word_index, embed_dim, max_sequence_length, embedding_matrix):
     from keras.layers import Embedding
     embedding_layer = Embedding(len(word_index) + 1,
                                 embed_dim,
                                 weights=[embedding_matrix],
-                                input_length=MAX_SEQUENCE_LENGTH,
+                                input_length=max_sequence_length,
                                 trainable=False)
 
 
-    sequence_input = Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32')
+    sequence_input = Input(shape=(max_sequence_length,), dtype='int32')
     embedded_sequences = embedding_layer(sequence_input)
     lstm = LSTM(embed_dim, dropout=0.2, recurrent_dropout=0.2)(embedded_sequences)
     preds = Dense(2, activation='sigmoid')(lstm)
@@ -192,7 +192,7 @@ def create_data_x(texts):
     tokenizer.fit_on_texts(texts)
     sequences = tokenizer.texts_to_sequences(texts)
     word_index = tokenizer.word_index
-    data_x = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
+    data_x = pad_sequences(sequences) # maybe set to 50
     return data_x, word_index
 
 def make_parmas(param_options):
@@ -248,6 +248,7 @@ def main():
     if saved_tokens.is_file() and saved_texts.is_file():
         tokens = pickle.load(open("./preprocessed/"+MODE+"_tokens", "rb"))
         data_x = pickle.load(open("./training_samples/"+MODE+"_data_x", "rb"))
+        max_sequence_length = data_x.shape[1]
         data_y = pickle.load(open("./training_samples/"+MODE+"_data_y", "rb"))
         word_index = pickle.load(open("./training_samples/"+MODE+"_word_index", "rb"))
         # texts = pickle.load(open(MODE+"_texts", "rb"))
@@ -259,6 +260,7 @@ def main():
             pickle.dump(texts, f)
         # prepare data x
         data_x, word_index = create_data_x(texts)
+        max_sequence_length = data_x.shape[1]
         # prepare data y
         y_labels = [row[2] for row in train_data[1:]]  # positive 1, negative 0
         data_y = np_utils.to_categorical(np.asarray(y_labels))
@@ -293,7 +295,7 @@ def main():
         word_vectors = load_word_vectors("./embeddings/"+MODE+"_"+MODEL+"_nsmc_"+file_suffix)
         embedding_matrix = compute_embedding_matrix(word_vectors=word_vectors, embedding_dimension=params['size'], word_index=word_index)
         # define network
-        model = create_model(word_index, params['size'], embedding_matrix)
+        model = create_model(word_index, params['size'],max_sequence_length, embedding_matrix)
         # train test split
         x_train, x_test, y_train, y_test = train_test_split(data_x, data_y, shuffle=False, test_size=0.25)
 
