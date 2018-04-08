@@ -2,8 +2,8 @@ PATH = "./nsmc/"
 ENTIRE_FILE = 'ratings.txt'
 TRAIN_FILE = "ratings_train.txt"
 TEST_FILE = "ratings_test.txt"
-MODE = "SYLLABLE" # WORD, MORPHEME, JAMO
-MODEL = "fastText" # word2vec, glove
+MODE = "SYLLABLE"
+MODEL = "fastText"
 
 # MAX_SEQUENCE_LENGTH = 50
 # EMBEDDING_DIM = 300
@@ -249,6 +249,7 @@ def main():
         tokens = pickle.load(open("./preprocessed/"+MODE+"_tokens", "rb"))
         data_x = pickle.load(open("./training_samples/"+MODE+"_data_x", "rb"))
         max_sequence_length = data_x.shape[1]
+        print("max_sequence_length: ",max_sequence_length)
         data_y = pickle.load(open("./training_samples/"+MODE+"_data_y", "rb"))
         word_index = pickle.load(open("./training_samples/"+MODE+"_word_index", "rb"))
         # texts = pickle.load(open(MODE+"_texts", "rb"))
@@ -300,7 +301,7 @@ def main():
         x_train, x_test, y_train, y_test = train_test_split(data_x, data_y, shuffle=False, test_size=0.25)
 
         file_suffix = str(list(params.values()))
-        filepath = "./model/{0}_{1}.hdf5".format(MODE, file_suffix)
+        filepath = "./model/{0}_{1}_{2}.hdf5".format(MODE, MODEL, file_suffix)
         checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True,
                                      mode='auto')
         early_stopping = EarlyStopping(monitor='val_acc', patience=5, verbose=1, mode='auto')
