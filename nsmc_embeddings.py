@@ -235,7 +235,7 @@ def visualize_result(history, fname):
     plt.xlabel('epoch')
     plt.legend(['train', 'test'], loc='upper left')
     plt.show(block=False)
-    plt.savefig(fname + '_accuracy.png', bbox_inches='tight')
+    plt.savefig(fname + '_loss.png', bbox_inches='tight')
     plt.close()
 def main():
     train_data = read_data(PATH + ENTIRE_FILE)
@@ -307,7 +307,7 @@ def main():
         history = model.fit(x_train,
                   y_train,
                   shuffle=True,
-                  epochs=100,
+                  epochs=5,
                   batch_size=32,
                   validation_data=(x_test, y_test),
                   callbacks=callbacks_list,
