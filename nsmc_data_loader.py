@@ -1,4 +1,4 @@
-PATH = "D:/naver_movie_data/nsmc/"
+PATH = "./nsmc/"
 ENTIRE_FILE = 'ratings.txt'
 TRAIN_FILE = "ratings_train.txt"
 TEST_FILE = "ratings_test.txt"
@@ -11,7 +11,7 @@ EMBEDDING_DIM = 300
 from tqdm import tqdm
 import re
 import pickle
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import time
 
 import keras
@@ -213,6 +213,7 @@ def make_parmas(param_options):
                             params_list.append(param)
     return params_list
 
+'''
 def visualize_result(history, fname):
     # summarize history for accuracy
     plt.plot(history.history['acc'])
@@ -239,7 +240,7 @@ def visualize_result(history, fname):
     plt.savefig(fname + '_loss.png', bbox_inches='tight')
     time.sleep(3)
     plt.close()
-
+'''
 def main():
     train_data = read_data(PATH + ENTIRE_FILE)
     saved_tokens = Path(MODE + "_tokens")
@@ -270,12 +271,12 @@ def main():
 
     max_workers = max(1, multiprocessing.cpu_count() - 1)
     param_options = {
-        'size':[50],
-        # 'size':[50, 100, 300, 500, 1000],
-        'window':[5],
-        # 'window':[2,5,7,10],
-        'min_count':[10],
-        # 'min_count':[10, 20, 50, 100],
+        #'size':[50],
+        'size':[50, 100, 300, 500, 1000],
+        #'window':[5],
+        'window':[2,5,7,10],
+        #'min_count':[10],
+        'min_count':[10, 20, 50, 100],
         'workers':[max_workers],
         'sample':[1E-3],
         'iter':[5]
@@ -312,7 +313,9 @@ def main():
                   callbacks=callbacks_list,
                   verbose=1)
 
-        visualize_result(history, fname=file_suffix)
+		with open('/history/'+MODE+"_"+MODEL+"_nsmc_"+file_suffix, 'wb') as file_pi:
+			pickle.dump(history.history, file_pi)
+        #visualize_result(history, fname=file_suffix)
 
 
 
