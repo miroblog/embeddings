@@ -290,7 +290,7 @@ def main():
 
     for params in params_list:
         file_suffix = str(list(params.values()))
-		print("running : "+file_suffix)
+        print("running : "+file_suffix)
         create_word_embddings(tokens=tokens, model_type=MODEL, params=params, file_suffix=file_suffix)
         # compute embedding matrix
         word_vectors = load_word_vectors("./embeddings/"+MODE+"_"+MODEL+"_nsmc_"+file_suffix)
