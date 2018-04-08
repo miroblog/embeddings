@@ -243,8 +243,8 @@ def visualize_result(history, fname):
 '''
 def main():
     train_data = read_data(PATH + ENTIRE_FILE)
-    saved_tokens = Path(MODE + "_tokens")
-    saved_texts = Path(MODE + "_texts")
+    saved_tokens = Path("./preprocessed/"+MODE + "_tokens")
+    saved_texts = Path("./preprocessed/"+MODE + "_texts")
     if saved_tokens.is_file() and saved_texts.is_file():
         tokens = pickle.load(open("./preprocessed/"+MODE+"_tokens", "rb"))
         data_x = pickle.load(open("./training_samples/"+MODE+"_data_x", "rb"))
