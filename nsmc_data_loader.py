@@ -314,7 +314,7 @@ def main():
                   verbose=1)
 
 		with open('/history/'+MODE+"_"+MODEL+"_nsmc_"+file_suffix, 'wb') as file_pi:
-			pickle.dump(history.history, file_pi)
+		    pickle.dump(history.history, file_pi)
         #visualize_result(history, fname=file_suffix)
 
 
