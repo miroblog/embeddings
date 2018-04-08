@@ -255,7 +255,7 @@ def main():
     else:
         tokens, texts = process_text(unit=MODE, train_data=train_data)
         with open("./preprocessed/"+MODE + "_tokens", "wb") as f:
-            pickle.dump(texts, f)
+            pickle.dump(tokens, f)
         with open("./preprocessed/"+MODE + "_texts", "wb") as f:
             pickle.dump(texts, f)
         # prepare data x
