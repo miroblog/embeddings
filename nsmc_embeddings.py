@@ -11,7 +11,9 @@ MODEL = "fastText"
 from tqdm import tqdm
 import re
 import pickle
-# import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import time
 
 import keras
@@ -212,7 +214,6 @@ def make_parmas(param_options):
                             params_list.append(param)
     return params_list
 
-'''
 def visualize_result(history, fname):
     # summarize history for accuracy
     plt.plot(history.history['acc'])
@@ -221,11 +222,9 @@ def visualize_result(history, fname):
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
     plt.legend(['train', 'test'], loc='upper left')
-    plt.show(block=False)
-
     plt.savefig(fname+'_accuracy.png', bbox_inches='tight')
-    time.sleep(3)
     plt.close()
+    time.sleep(3)
 
 
     # summarize history for loss
@@ -236,10 +235,8 @@ def visualize_result(history, fname):
     plt.xlabel('epoch')
     plt.legend(['train', 'test'], loc='upper left')
     plt.show(block=False)
-    plt.savefig(fname + '_loss.png', bbox_inches='tight')
-    time.sleep(3)
+    plt.savefig(fname + '_accuracy.png', bbox_inches='tight')
     plt.close()
-'''
 def main():
     train_data = read_data(PATH + ENTIRE_FILE)
     saved_tokens = Path("./preprocessed/"+MODE + "_tokens")
@@ -317,7 +314,7 @@ def main():
                   verbose=1)
         with open('./history/'+MODE+"_"+MODEL+"_nsmc_"+file_suffix, 'wb') as f:
             pickle.dump(history.history, f)
-        #visualize_result(history, fname=file_suffix)
+        visualize_result(history, fname=file_suffix)
 
 
 
