@@ -25,6 +25,8 @@ from keras.preprocessing.text import Tokenizer
 from keras.callbacks import ModelCheckpoint
 from keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
+import tensorflow as tf
+from keras import backend as K
 
 from konlpy.tag import Twitter
 import hgtk
@@ -293,6 +295,12 @@ def main():
         word_vectors = load_word_vectors("./embeddings/"+MODE+"_"+MODEL+"_nsmc_"+file_suffix)
         embedding_matrix = compute_embedding_matrix(word_vectors=word_vectors, embedding_dimension=params['size'], word_index=word_index)
         # define network
+
+        # memory issues
+        K.clear_session()
+        sess = tf.Session()
+        K.set_session(sess)
+
         model = create_model(word_index, params['size'],max_sequence_length, embedding_matrix)
         # train test split
         x_train, x_test, y_train, y_test = train_test_split(data_x, data_y, shuffle=False, test_size=0.25)
