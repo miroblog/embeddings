@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
+
 PATH = "./nsmc/"
 ENTIRE_FILE = 'ratings.txt'
 TRAIN_FILE = "ratings_train.txt"
 TEST_FILE = "ratings_test.txt"
-MODE = "MORPHEME"
-MODEL = "word2vec"
+MODE = "WORD"
+MODEL = "glove"
 
 # MAX_SEQUENCE_LENGTH = 50
 # EMBEDDING_DIM = 300
@@ -46,7 +48,7 @@ def read_data(filename):
 
 # save glove vectors to word2vec format
 def save_word2vec_format(glove, filename):
-    with open(filename, 'w') as savefile:
+    with open(filename, 'w', encoding='utf-8') as savefile:
         (rows, cols) = glove.word_vectors.shape
         savefile.write(str(rows) + " " + str(cols) + "\n")
         if hasattr(glove.dictionary, 'iteritems'):
@@ -96,7 +98,8 @@ def create_word_embddings(tokens, model_type, params, file_suffix):
         corpus = Corpus()
         corpus.fit(tokens, window=window)
         glove = Glove(no_components=nb_components, learning_rate=0.05)
-        glove.fit(corpus.matrix, epochs=5, no_threads=no_threads, verbose=True)
+        glove.fit(corpus.matrix, epochs=1, no_threads=no_threads, verbose=True)
+        glove.add_dictionary(corpus.dictionary)
         save_word2vec_format(glove, "./embeddings/"+MODE+"_"+model_type+"_nsmc_"+file_suffix)
     else:
         raise ValueError
