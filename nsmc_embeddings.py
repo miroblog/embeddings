@@ -4,8 +4,8 @@ PATH = "./nsmc/"
 ENTIRE_FILE = 'ratings.txt'
 TRAIN_FILE = "ratings_train.txt"
 TEST_FILE = "ratings_test.txt"
-MODE = "WORD"
-MODEL = "glove"
+MODE = "SYLLABLE"
+MODEL = "fastText"
 
 # MAX_SEQUENCE_LENGTH = 50
 # EMBEDDING_DIM = 300
@@ -88,6 +88,7 @@ def create_word_embddings(tokens, model_type, params, file_suffix):
         word_vectors = model.wv
         word_vectors.save_word2vec_format("./embeddings/"+MODE+"_"+model_type+"_nsmc_"+file_suffix)
     elif(model_type =="fastText"):
+        params['min_n'] = 1
         model = FastText(tokens, **params)
         word_vectors = model.wv
         word_vectors.save_word2vec_format("./embeddings/"+MODE+"_"+model_type+"_nsmc_"+file_suffix)
