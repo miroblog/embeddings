@@ -4,8 +4,8 @@ PATH = "./nsmc/"
 ENTIRE_FILE = 'ratings.txt'
 TRAIN_FILE = "ratings_train.txt"
 TEST_FILE = "ratings_test.txt"
-MODE = "SYLLABLE"
-MODEL = "fastText"
+MODE = "MORPHEME"
+MODEL = "word2vec"
 
 # MAX_SEQUENCE_LENGTH = 50
 # EMBEDDING_DIM = 300
@@ -13,9 +13,6 @@ MODEL = "fastText"
 from tqdm import tqdm
 import re
 import pickle
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 import time
 
 import keras
@@ -220,6 +217,7 @@ def make_parmas(param_options):
                             params_list.append(param)
     return params_list
 
+	'''
 def visualize_result(history, fname):
     # summarize history for accuracy
     plt.plot(history.history['acc'])
@@ -243,6 +241,7 @@ def visualize_result(history, fname):
     plt.show(block=False)
     plt.savefig(fname + '_loss.png', bbox_inches='tight')
     plt.close()
+	'''
 def main():
     train_data = read_data(PATH + ENTIRE_FILE)
     saved_tokens = Path("./preprocessed/"+MODE + "_tokens")
@@ -326,7 +325,7 @@ def main():
                   verbose=1)
         with open('./history/'+MODE+"_"+MODEL+"_nsmc_"+file_suffix, 'wb') as f:
             pickle.dump(history.history, f)
-        visualize_result(history, fname=file_suffix)
+        #visualize_result(history, fname=file_suffix)
 
 
 
