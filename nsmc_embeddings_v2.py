@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 PATH = "./nsmc/"
 ENTIRE_FILE = 'ratings.txt'
 TRAIN_FILE = "ratings_train.txt"
@@ -360,3 +363,5 @@ if __name__ == "__main__":
     # print(model.summary())
     twitter = Twitter()
     main()
+	
+	
