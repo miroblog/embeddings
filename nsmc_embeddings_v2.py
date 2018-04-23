@@ -355,7 +355,7 @@ def main():
         history = model.fit(x_train,
                             y_train,
                             shuffle=True,
-                            epochs=5,
+                            epochs=10,
                             batch_size=32,
                             validation_data=(x_test, y_test),
                             callbacks=callbacks_list,
