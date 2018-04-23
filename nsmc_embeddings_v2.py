@@ -146,7 +146,7 @@ def tokenize_words(sentence):
 
 
 def tokenize_morpheme(doc):
-    # norm, stem¿∫ optional
+    # norm, stemÏùÄ optional
     # return ['/'.join(t) for t in twitter.pos(doc, norm=True, stem=True)]
     return [t for t in twitter.morphs(doc, norm=True, stem=True)]
 
