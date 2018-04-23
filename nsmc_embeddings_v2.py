@@ -36,13 +36,14 @@ from gensim.models import KeyedVectors
 import multiprocessing
 from glove import Corpus, Glove
 
-
 from pathlib import Path
+
 
 def read_data(filename):
     with open(filename, 'rt', encoding='UTF8') as f:
         data = [line.split('\t') for line in f.read().splitlines()]
     return data
+
 
 # save glove vectors to word2vec format
 def save_word2vec_format(glove, filename):
@@ -63,8 +64,6 @@ def save_word2vec_format(glove, filename):
             savefile.write((word + vector_string + "\n"))
 
 
-
-
 ''' glove paramaters
         - int no_components: number of latent dimensions
         - float learning_rate: learning rate for SGD estimation.
@@ -81,16 +80,16 @@ def save_word2vec_format(glove, filename):
 
 
 def create_word_embddings(tokens, model_type, params, file_suffix):
-    if(model_type == "word2vec"):
+    if (model_type == "word2vec"):
         model = Word2Vec(tokens, **params)
         word_vectors = model.wv
-        word_vectors.save_word2vec_format("./embeddings/"+MODE+"_"+model_type+"_nsmc_"+file_suffix)
-    elif(model_type =="fastText"):
+        word_vectors.save_word2vec_format("./embeddings/" + MODE + "_" + model_type + "_nsmc_" + file_suffix)
+    elif (model_type == "fastText"):
         params['min_n'] = 1
         model = FastText(tokens, **params)
         word_vectors = model.wv
-        word_vectors.save_word2vec_format("./embeddings/"+MODE+"_"+model_type+"_nsmc_"+file_suffix)
-    elif(model_type =="glove"):
+        word_vectors.save_word2vec_format("./embeddings/" + MODE + "_" + model_type + "_nsmc_" + file_suffix)
+    elif (model_type == "glove"):
         nb_components = params['size']
         no_threads = params['workers']
         window = params['window']
@@ -99,9 +98,10 @@ def create_word_embddings(tokens, model_type, params, file_suffix):
         glove = Glove(no_components=nb_components, learning_rate=0.05)
         glove.fit(corpus.matrix, epochs=1, no_threads=no_threads, verbose=True)
         glove.add_dictionary(corpus.dictionary)
-        save_word2vec_format(glove, "./embeddings/"+MODE+"_"+model_type+"_nsmc_"+file_suffix)
+        save_word2vec_format(glove, "./embeddings/" + MODE + "_" + model_type + "_nsmc_" + file_suffix)
     else:
         raise ValueError
+
 
 def create_model(word_index, embed_dim, max_sequence_length, embedding_matrix):
     from keras.layers import Embedding
@@ -110,7 +110,6 @@ def create_model(word_index, embed_dim, max_sequence_length, embedding_matrix):
                                 weights=[embedding_matrix],
                                 input_length=max_sequence_length,
                                 trainable=False)
-
 
     sequence_input = Input(shape=(max_sequence_length,), dtype='int32')
     embedded_sequences = embedding_layer(sequence_input)
@@ -123,15 +122,17 @@ def create_model(word_index, embed_dim, max_sequence_length, embedding_matrix):
                   metrics=['accuracy'])
     return model
 
+
 def load_word_vectors(fname):
     word_vectors = KeyedVectors.load_word2vec_format(fname)  # C text format
     return word_vectors
+
 
 def compute_embedding_matrix(word_vectors, embedding_dimension, word_index):
     embedding_matrix = np.zeros((len(word_index) + 1, embedding_dimension))
     for word, i in word_index.items():
         try:
-            embedding_vector = word_vectors.get_vector(word) # fixed
+            embedding_vector = word_vectors.get_vector(word)  # fixed
             if embedding_vector is not None:
                 # words not found in embedding index will be all-zeros.
                 embedding_matrix[i] = embedding_vector[:embedding_dimension]
@@ -143,10 +144,12 @@ def compute_embedding_matrix(word_vectors, embedding_dimension, word_index):
 def tokenize_words(sentence):
     return re.findall('\w+', sentence)
 
+
 def tokenize_morpheme(doc):
-  # norm, stem¿∫ optional
-  # return ['/'.join(t) for t in twitter.pos(doc, norm=True, stem=True)]
-  return [t for t in twitter.morphs(doc, norm=True, stem=True)]
+    # norm, stem¿∫ optional
+    # return ['/'.join(t) for t in twitter.pos(doc, norm=True, stem=True)]
+    return [t for t in twitter.morphs(doc, norm=True, stem=True)]
+
 
 def word_to_jamo_seqs(word):
     temp = []
@@ -157,9 +160,10 @@ def word_to_jamo_seqs(word):
             continue
     return "".join(temp)
 
+
 def process_text(unit, train_data):
-    texts = [] # list of sentences
-    tokens = [] # list of words
+    texts = []  # list of sentences
+    tokens = []  # list of words
     if (unit == "MORPHEME"):
         for i in tqdm(range(1, len(train_data))):
             token = tokenize_morpheme(train_data[i][1])
@@ -192,13 +196,15 @@ def process_text(unit, train_data):
         sys.exit()
     return tokens, texts
 
+
 def create_data_x(texts):
     tokenizer = Tokenizer(filters="")  # do not designate filters
     tokenizer.fit_on_texts(texts)
     sequences = tokenizer.texts_to_sequences(texts)
     word_index = tokenizer.word_index
-    data_x = pad_sequences(sequences) # maybe set to 50
+    data_x = pad_sequences(sequences)  # maybe set to 50
     return data_x, word_index
+
 
 def make_parmas(param_options):
     params_list = []
@@ -218,7 +224,7 @@ def make_parmas(param_options):
                             params_list.append(param)
     return params_list
 
-	'''
+'''
 def visualize_result(history, fname):
     # summarize history for accuracy
     plt.plot(history.history['acc'])
@@ -243,27 +249,30 @@ def visualize_result(history, fname):
     plt.savefig(fname + '_loss.png', bbox_inches='tight')
     plt.close()
 '''
+
+
 def make_file_suffix(dict):
     suffix = ', '.join("{!s}={!r}".format(k, v) for (k, v) in dict.items())
     return suffix
 
+
 def main():
     train_data = read_data(PATH + ENTIRE_FILE)
-    saved_tokens = Path("./preprocessed/"+MODE + "_tokens")
-    saved_texts = Path("./preprocessed/"+MODE + "_texts")
+    saved_tokens = Path("./preprocessed/" + MODE + "_tokens")
+    saved_texts = Path("./preprocessed/" + MODE + "_texts")
     if saved_tokens.is_file() and saved_texts.is_file():
-        tokens = pickle.load(open("./preprocessed/"+MODE+"_tokens", "rb"))
-        data_x = pickle.load(open("./training_samples/"+MODE+"_data_x", "rb"))
+        tokens = pickle.load(open("./preprocessed/" + MODE + "_tokens", "rb"))
+        data_x = pickle.load(open("./training_samples/" + MODE + "_data_x", "rb"))
         max_sequence_length = data_x.shape[1]
-        print("max_sequence_length: ",max_sequence_length)
-        data_y = pickle.load(open("./training_samples/"+MODE+"_data_y", "rb"))
-        word_index = pickle.load(open("./training_samples/"+MODE+"_word_index", "rb"))
+        print("max_sequence_length: ", max_sequence_length)
+        data_y = pickle.load(open("./training_samples/" + MODE + "_data_y", "rb"))
+        word_index = pickle.load(open("./training_samples/" + MODE + "_word_index", "rb"))
         # texts = pickle.load(open(MODE+"_texts", "rb"))
     else:
         tokens, texts = process_text(unit=MODE, train_data=train_data)
-        with open("./preprocessed/"+MODE + "_tokens", "wb") as f:
+        with open("./preprocessed/" + MODE + "_tokens", "wb") as f:
             pickle.dump(tokens, f)
-        with open("./preprocessed/"+MODE + "_texts", "wb") as f:
+        with open("./preprocessed/" + MODE + "_texts", "wb") as f:
             pickle.dump(texts, f)
         # prepare data x
         data_x, word_index = create_data_x(texts)
@@ -271,28 +280,28 @@ def main():
         # prepare data y
         y_labels = [row[2] for row in train_data[1:]]  # positive 1, negative 0
         data_y = np_utils.to_categorical(np.asarray(y_labels))
-        with open("./training_samples/"+MODE + "_data_x", "wb") as f:
+        with open("./training_samples/" + MODE + "_data_x", "wb") as f:
             pickle.dump(data_x, f)
-        with open("./training_samples/"+MODE + "_data_y", "wb") as f:
+        with open("./training_samples/" + MODE + "_data_y", "wb") as f:
             pickle.dump(data_y, f)
-        with open("./training_samples/"+MODE + "_word_index", "wb") as f:
+        with open("./training_samples/" + MODE + "_word_index", "wb") as f:
             pickle.dump(word_index, f)
 
     max_workers = max(1, multiprocessing.cpu_count() - 1)
 
     # embedding size
     param_options_dimension = {
-        'size':[50, 100, 300, 500, 1000],
-        'window':[5],
-        'min_count':[20],
-        'workers':[max_workers],
-        'sample':[1E-3],
-        'iter':[5]
+        'size': [50, 100, 300, 500, 1000],
+        'window': [5],
+        'min_count': [20],
+        'workers': [max_workers],
+        'sample': [1E-3],
+        'iter': [5]
     }
     params_dimension_list = make_parmas(param_options_dimension)
     param_options_window = {
         'size': [300],
-        'window': [2,5,7,10],
+        'window': [2, 5, 7, 10],
         'min_count': [20],
         'workers': [max_workers],
         'sample': [1E-3],
@@ -320,11 +329,12 @@ def main():
 
     for params in params_list:
         file_suffix = make_file_suffix(params)
-        print("running : "+file_suffix)
+        print("running : " + file_suffix)
         create_word_embddings(tokens=tokens, model_type=MODEL, params=params, file_suffix=file_suffix)
         # compute embedding matrix
-        word_vectors = load_word_vectors("./embeddings/"+MODE+"_"+MODEL+"_nsmc_"+file_suffix)
-        embedding_matrix = compute_embedding_matrix(word_vectors=word_vectors, embedding_dimension=params['size'], word_index=word_index)
+        word_vectors = load_word_vectors("./embeddings/" + MODE + "_" + MODEL + "_nsmc_" + file_suffix)
+        embedding_matrix = compute_embedding_matrix(word_vectors=word_vectors, embedding_dimension=params['size'],
+                                                    word_index=word_index)
         # define network
 
         # memory issues
@@ -332,7 +342,7 @@ def main():
         sess = tf.Session()
         K.set_session(sess)
 
-        model = create_model(word_index, params['size'],max_sequence_length, embedding_matrix)
+        model = create_model(word_index, params['size'], max_sequence_length, embedding_matrix)
         # train test split
         x_train, x_test, y_train, y_test = train_test_split(data_x, data_y, shuffle=False, test_size=0.25)
 
@@ -343,17 +353,16 @@ def main():
         callbacks_list = [checkpoint, early_stopping]
 
         history = model.fit(x_train,
-                  y_train,
-                  shuffle=True,
-                  epochs=5,
-                  batch_size=32,
-                  validation_data=(x_test, y_test),
-                  callbacks=callbacks_list,
-                  verbose=1)
-        with open('./history2/'+MODE+"_"+MODEL+"_nsmc_"+file_suffix, 'wb') as f:
+                            y_train,
+                            shuffle=True,
+                            epochs=5,
+                            batch_size=32,
+                            validation_data=(x_test, y_test),
+                            callbacks=callbacks_list,
+                            verbose=1)
+        with open('./history2/' + MODE + "_" + MODEL + "_nsmc_" + file_suffix, 'wb') as f:
             pickle.dump(history.history, f)
-        #visualize_result(history, fname=file_suffix)
-
+            # visualize_result(history, fname=file_suffix)
 
 
 if __name__ == "__main__":
@@ -361,5 +370,5 @@ if __name__ == "__main__":
     # print(model.summary())
     twitter = Twitter()
     main()
-	
-	
+
+
