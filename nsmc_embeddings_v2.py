@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 PATH = "./nsmc/"
 ENTIRE_FILE = 'ratings.txt'
 TRAIN_FILE = "ratings_train.txt"
