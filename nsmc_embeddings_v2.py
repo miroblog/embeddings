@@ -146,7 +146,7 @@ def tokenize_words(sentence):
     return re.findall('\w+', sentence)
 
 def tokenize_morpheme(doc):
-  # norm, stemÏùÄ optional
+  # norm, stem¿∫ optional
   # return ['/'.join(t) for t in twitter.pos(doc, norm=True, stem=True)]
   return [t for t in twitter.morphs(doc, norm=True, stem=True)]
 
@@ -243,6 +243,11 @@ def visualize_result(history, fname):
     plt.show(block=False)
     plt.savefig(fname + '_loss.png', bbox_inches='tight')
     plt.close()
+
+def make_file_suffix(dict):
+    suffix = ', '.join("{!s}={!r}".format(k, v) for (k, v) in dict.items())
+    return suffix
+
 def main():
     train_data = read_data(PATH + ENTIRE_FILE)
     saved_tokens = Path("./preprocessed/"+MODE + "_tokens")
@@ -275,24 +280,47 @@ def main():
             pickle.dump(word_index, f)
 
     max_workers = max(1, multiprocessing.cpu_count() - 1)
-    param_options = {
-        #'size':[50],
+
+    # embedding size
+    param_options_dimension = {
         'size':[50, 100, 300, 500, 1000],
-        #'window':[5],
-        'window':[2,5,7,10],
-        #'min_count':[10],
-        'min_count':[10, 20, 50, 100],
+        'window':[5],
+        'min_count':[20],
         'workers':[max_workers],
         'sample':[1E-3],
         'iter':[5]
     }
-    params_list = make_parmas(param_options) # 100 different parameters
+    params_dimension_list = make_parmas(param_options_dimension)
+    param_options_window = {
+        'size': [300],
+        'window': [2,5,7,10],
+        'min_count': [20],
+        'workers': [max_workers],
+        'sample': [1E-3],
+        'iter': [5]
+    }
+    params_window_list = make_parmas(param_options_dimension)
+
+    param_options_min_count = {
+        'size': [300],
+        'window': [5],
+        'min_count': [10, 20, 50, 100],
+        'workers': [max_workers],
+        'sample': [1E-3],
+        'iter': [5]
+    }
+    params_min_count_list = make_parmas(param_options_dimension)
+
+    params_list = []
+    params_list.extend(params_dimension_list)
+    params_list.extend(params_window_list)
+    params_list.extend(params_min_count_list)
 
     # params = {'size': 300, 'window': 5, 'min_count': 4,
     #           'workers': max(1, multiprocessing.cpu_count() - 1), 'sample': 1E-3}  # 'iter':5
 
     for params in params_list:
-        file_suffix = str(list(params.values()))
+        file_suffix = make_file_suffix(params)
         print("running : "+file_suffix)
         create_word_embddings(tokens=tokens, model_type=MODEL, params=params, file_suffix=file_suffix)
         # compute embedding matrix
@@ -309,7 +337,6 @@ def main():
         # train test split
         x_train, x_test, y_train, y_test = train_test_split(data_x, data_y, shuffle=False, test_size=0.25)
 
-        file_suffix = str(list(params.values()))
         filepath = "./model/{0}_{1}_{2}.hdf5".format(MODE, MODEL, file_suffix)
         checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True,
                                      mode='auto')
@@ -324,7 +351,7 @@ def main():
                   validation_data=(x_test, y_test),
                   callbacks=callbacks_list,
                   verbose=1)
-        with open('./history/'+MODE+"_"+MODEL+"_nsmc_"+file_suffix, 'wb') as f:
+        with open('./history2/'+MODE+"_"+MODEL+"_nsmc_"+file_suffix, 'wb') as f:
             pickle.dump(history.history, f)
         visualize_result(history, fname=file_suffix)
 
