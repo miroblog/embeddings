@@ -301,7 +301,7 @@ def main():
     # }
     # params_dimension_list = make_parmas(param_options_dimension)
     param_options_window = {
-        'size': [300],
+        'size': [500],
         'window': [2, 5, 7, 10],
         'min_count': [20],
         'workers': [max_workers],
@@ -311,7 +311,7 @@ def main():
     params_window_list = make_parmas(param_options_window)
 
     param_options_min_count = {
-        'size': [300],
+        'size': [500],
         'window': [5],
         'min_count': [10, 20, 50, 100],
         'workers': [max_workers],
