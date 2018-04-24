@@ -6,7 +6,7 @@ ENTIRE_FILE = 'ratings.txt'
 TRAIN_FILE = "ratings_train.txt"
 TEST_FILE = "ratings_test.txt"
 MODE = "MORPHEME"
-MODEL = "word2vec"
+MODEL = "glove"
 
 # MAX_SEQUENCE_LENGTH = 50
 # EMBEDDING_DIM = 300
@@ -291,15 +291,15 @@ def main():
     max_workers = max(1, multiprocessing.cpu_count() - 1)
 
     # # embedding size
-    # param_options_dimension = {
-    #     'size': [50, 100, 300, 500, 1000],
-    #     'window': [5],
-    #     'min_count': [20],
-    #     'workers': [max_workers],
-    #     'sample': [1E-3],
-    #     'iter': [5]
-    # }
-    # params_dimension_list = make_parmas(param_options_dimension)
+    param_options_dimension = {
+        'size': [50, 100, 300, 500, 1000],
+        'window': [5],
+        'min_count': [20],
+        'workers': [max_workers],
+        'sample': [1E-3],
+        'iter': [5]
+    }
+    params_dimension_list = make_parmas(param_options_dimension)
     param_options_window = {
         'size': [500],
         'window': [2, 5, 7, 10],
@@ -321,9 +321,13 @@ def main():
     params_min_count_list = make_parmas(param_options_min_count)
 
     params_list = []
-    # params_list.extend(params_dimension_list)
+    params_list.extend(params_dimension_list)
     params_list.extend(params_window_list)
     params_list.extend(params_min_count_list)
+
+    # remove duplicates
+    params_list = set(params_list)
+    params_list = list(params_list)
 
     # params = {'size': 300, 'window': 5, 'min_count': 4,
     #           'workers': max(1, multiprocessing.cpu_count() - 1), 'sample': 1E-3}  # 'iter':5
