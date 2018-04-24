@@ -325,10 +325,6 @@ def main():
     params_list.extend(params_window_list)
     params_list.extend(params_min_count_list)
 
-    # remove duplicates
-    params_list = set(params_list)
-    params_list = list(params_list)
-
     # params = {'size': 300, 'window': 5, 'min_count': 4,
     #           'workers': max(1, multiprocessing.cpu_count() - 1), 'sample': 1E-3}  # 'iter':5
 
