@@ -307,7 +307,7 @@ def main():
         'sample': [1E-3],
         'iter': [5]
     }
-    params_window_list = make_parmas(param_options_dimension)
+    params_window_list = make_parmas(param_options_window)
 
     param_options_min_count = {
         'size': [300],
@@ -317,7 +317,7 @@ def main():
         'sample': [1E-3],
         'iter': [5]
     }
-    params_min_count_list = make_parmas(param_options_dimension)
+    params_min_count_list = make_parmas(param_options_min_count)
 
     params_list = []
     params_list.extend(params_dimension_list)
