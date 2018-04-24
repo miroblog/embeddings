@@ -289,7 +289,7 @@ def main():
 
     max_workers = max(1, multiprocessing.cpu_count() - 1)
 
-	'''
+'''
     # embedding size
     param_options_dimension = {
         'size': [50, 100, 300, 500, 1000],
@@ -301,7 +301,7 @@ def main():
     }
 	
     params_dimension_list = make_parmas(param_options_dimension)
-    '''
+'''
 	param_options_window = {
         'size': [300],
         'window': [2, 5, 7, 10],
