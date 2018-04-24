@@ -356,7 +356,7 @@ def main():
                             y_train,
                             shuffle=True,
                             epochs=10,
-                            batch_size=32,
+                            batch_size=128,
                             validation_data=(x_test, y_test),
                             callbacks=callbacks_list,
                             verbose=1)
