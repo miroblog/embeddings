@@ -224,6 +224,7 @@ def make_parmas(param_options):
                             params_list.append(param)
     return params_list
 
+
 '''
 def visualize_result(history, fname):
     # summarize history for accuracy
@@ -289,20 +290,17 @@ def main():
 
     max_workers = max(1, multiprocessing.cpu_count() - 1)
 
-'''
-    # embedding size
-    param_options_dimension = {
-        'size': [50, 100, 300, 500, 1000],
-        'window': [5],
-        'min_count': [20],
-        'workers': [max_workers],
-        'sample': [1E-3],
-        'iter': [5]
-    }
-	
-    params_dimension_list = make_parmas(param_options_dimension)
-'''
-	param_options_window = {
+    # # embedding size
+    # param_options_dimension = {
+    #     'size': [50, 100, 300, 500, 1000],
+    #     'window': [5],
+    #     'min_count': [20],
+    #     'workers': [max_workers],
+    #     'sample': [1E-3],
+    #     'iter': [5]
+    # }
+    # params_dimension_list = make_parmas(param_options_dimension)
+    param_options_window = {
         'size': [300],
         'window': [2, 5, 7, 10],
         'min_count': [20],
@@ -323,7 +321,7 @@ def main():
     params_min_count_list = make_parmas(param_options_min_count)
 
     params_list = []
-    #params_list.extend(params_dimension_list)
+    # params_list.extend(params_dimension_list)
     params_list.extend(params_window_list)
     params_list.extend(params_min_count_list)
 
