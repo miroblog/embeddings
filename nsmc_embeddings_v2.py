@@ -5,7 +5,7 @@ PATH = "./nsmc/"
 ENTIRE_FILE = 'ratings.txt'
 TRAIN_FILE = "ratings_train.txt"
 TEST_FILE = "ratings_test.txt"
-MODE = "MORPHEME"
+MODE = "WORD"
 MODEL = "glove"
 
 # MAX_SEQUENCE_LENGTH = 50
@@ -339,9 +339,13 @@ def main():
         # define network
 
         # memory issues
-        K.clear_session()
+        try:
+               K.clear_session()
+        except:
+               print("clearing session failed")
         sess = tf.Session()
         K.set_session(sess)
+        time.sleep(5)
 
         model = create_model(word_index, params['size'], max_sequence_length, embedding_matrix)
         # train test split
