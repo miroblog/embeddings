@@ -26,7 +26,7 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from keras import backend as K
 
-from konlpy.tag import Twitter, Kkma, Mecab
+from konlpy.tag import Twitter, Kkma, Komoran
 import hgtk
 from kor_romanize import Romanizer
 from gensim.models import Word2Vec, FastText
@@ -252,8 +252,9 @@ def visualize_result(history, fname):
 
 
 def make_file_suffix(dict):
-    dict['parser'] = args.parser
-    suffix = ', '.join("{!s}={!r}".format(k, v) for (k, v) in dict.items())
+    temp_dict = dict.copy()
+    temp_dict['parser'] = args.parser
+    suffix = ', '.join("{!s}={!r}".format(k, v) for (k, v) in temp_dict.items())
     return suffix
 
 
@@ -370,17 +371,17 @@ if __name__ == "__main__":
 
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--parser", help="morpheme parser")
-    parser.add_argument("-m", "--model", help="model name")
-    parser.add_argument("-u", "--unit", help="unit")
+    parser.add_argument("-p", "--parser", help="morpheme parser: kkma, komoran, twitter")
+    parser.add_argument("-m", "--model", help="model name : word2vec, fastText, glove")
+    parser.add_argument("-u", "--unit", help="unit : WORD, MORPHEME, SYLLABLE, JAMO")
     args = parser.parse_args()
     MODE = args.unit #"MORPHEME"
     MODEL = args.model #"fastText"
 
     if(args.parser == "kkma"):
         parser = Kkma()
-    elif(args.parser == "mecab"):
-        parser = Mecab()
+    elif(args.parser == "komoran"):
+        parser = Komoran()
     else:
         parser = Twitter()
     # model = keras.models.load_model('./model/' +"WORD_300"  + ".hdf5")
