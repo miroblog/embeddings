@@ -147,7 +147,7 @@ def tokenize_words(sentence):
 def tokenize_morpheme(doc):
     # norm, stem은 optional
     # return ['/'.join(t) for t in twitter.pos(doc, norm=True, stem=True)]
-    return [t for t in parser.morphs(doc, stem=True)]
+    return [t for t in parser.morphs(doc)]
 
 
 def word_to_jamo_seqs(word):
