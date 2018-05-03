@@ -147,7 +147,7 @@ def tokenize_words(sentence):
 def tokenize_morpheme(doc):
     # norm, stem은 optional
     # return ['/'.join(t) for t in twitter.pos(doc, norm=True, stem=True)]
-    return [t for t in parser.morphs(doc)]
+    return [t for t in parser.morphs(doc, norm=True, stem=True)]
 
 
 def word_to_jamo_seqs(word):
@@ -258,6 +258,45 @@ def make_file_suffix(dict):
     return suffix
 
 
+def train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y):
+    file_suffix = make_file_suffix(params)
+    print("running : " + file_suffix)
+    create_word_embeddings(tokens=tokens, model_type=MODEL, params=params, file_suffix=file_suffix)
+    # compute embedding matrix
+    word_vectors = load_word_vectors("./embeddings/" + MODE + "_" + MODEL + "_nsmc_" + file_suffix)
+    embedding_matrix = compute_embedding_matrix(word_vectors=word_vectors, embedding_dimension=params['size'],
+                                                word_index=word_index)
+    # define network
+
+    # memory issues
+    K.clear_session()
+    sess = tf.Session()
+    K.set_session(sess)
+
+    model = create_model(word_index, params['size'], max_sequence_length, embedding_matrix)
+    # train test split
+    x_train, x_test, y_train, y_test = train_test_split(data_x, data_y, shuffle=False, test_size=0.25)
+
+    filepath = "./model/{0}_{1}_{2}.hdf5".format(MODE, MODEL, file_suffix)
+    checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True,
+                                 mode='auto')
+    early_stopping = EarlyStopping(monitor='val_acc', patience=5, verbose=1, mode='auto')
+    callbacks_list = [checkpoint, early_stopping]
+
+    history = model.fit(x_train,
+                        y_train,
+                        shuffle=True,
+                        epochs=10,
+                        batch_size=128,
+                        validation_data=(x_test, y_test),
+                        callbacks=callbacks_list,
+                        verbose=1)
+    with open('./history2/' + MODE + "_" + MODEL + "_nsmc_" + file_suffix, 'wb') as f:
+        pickle.dump(history.history, f)
+        # visualize_result(history, fname=file_suffix)
+    # return max validation acc
+    return max(history.history['val_acc'])
+
 def main():
     train_data = read_data(PATH + ENTIRE_FILE)
     mode_affix = args.parser + "_" + MODE
@@ -302,8 +341,23 @@ def main():
         'iter': [5]
     }
     params_dimension_list = make_parmas(param_options_dimension)
+
+    params_list = []
+    params_list.extend(params_dimension_list)
+    # params = {'size': 300, 'window': 5, 'min_count': 4,
+    #           'workers': max(1, multiprocessing.cpu_count() - 1), 'sample': 1E-3}  # 'iter':5
+
+    prev_acc = 0
+    max_param = None
+    for params in params_list:
+        curr_acc = train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y)
+        if(curr_acc > prev_acc):
+             max_param = params
+        prev_acc = curr_acc
+    max_acc_dim = max_param['size']
+
     param_options_window = {
-        'size': [500],
+        'size': max_acc_dim,
         'window': [2, 5, 7, 10],
         'min_count': [20],
         'workers': [max_workers],
@@ -311,62 +365,39 @@ def main():
         'iter': [5]
     }
     params_window_list = make_parmas(param_options_window)
+    params_list = []
+    params_list.extend(params_window_list)
+
+    prev_acc = 0
+    max_param = None
+    for params in params_list:
+        curr_acc = train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y)
+        if (curr_acc > prev_acc):
+            max_param = params
+        prev_acc = curr_acc
+    max_acc_window = max_param['window']
 
     param_options_min_count = {
-        'size': [500],
-        'window': [5],
+        'size': max_acc_dim,
+        'window': max_acc_window,
         'min_count': [10, 20, 50, 100],
         'workers': [max_workers],
         'sample': [1E-3],
         'iter': [5]
     }
-    params_min_count_list = make_parmas(param_options_min_count)
 
+    params_min_count_list = make_parmas(param_options_min_count)
     params_list = []
-    params_list.extend(params_dimension_list)
-    params_list.extend(params_window_list)
     params_list.extend(params_min_count_list)
 
-    # params = {'size': 300, 'window': 5, 'min_count': 4,
-    #           'workers': max(1, multiprocessing.cpu_count() - 1), 'sample': 1E-3}  # 'iter':5
-
+    prev_acc = 0
+    max_param = None
     for params in params_list:
-        file_suffix = make_file_suffix(params)
-        print("running : " + file_suffix)
-        create_word_embeddings(tokens=tokens, model_type=MODEL, params=params, file_suffix=file_suffix)
-        # compute embedding matrix
-        word_vectors = load_word_vectors("./embeddings/" + MODE + "_" + MODEL + "_nsmc_" + file_suffix)
-        embedding_matrix = compute_embedding_matrix(word_vectors=word_vectors, embedding_dimension=params['size'],
-                                                    word_index=word_index)
-        # define network
-
-        # memory issues
-        K.clear_session()
-        sess = tf.Session()
-        K.set_session(sess)
-
-        model = create_model(word_index, params['size'], max_sequence_length, embedding_matrix)
-        # train test split
-        x_train, x_test, y_train, y_test = train_test_split(data_x, data_y, shuffle=False, test_size=0.25)
-
-        filepath = "./model/{0}_{1}_{2}.hdf5".format(MODE, MODEL, file_suffix)
-        checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True,
-                                     mode='auto')
-        early_stopping = EarlyStopping(monitor='val_acc', patience=5, verbose=1, mode='auto')
-        callbacks_list = [checkpoint, early_stopping]
-
-        history = model.fit(x_train,
-                            y_train,
-                            shuffle=True,
-                            epochs=10,
-                            batch_size=128,
-                            validation_data=(x_test, y_test),
-                            callbacks=callbacks_list,
-                            verbose=1)
-        with open('./history3/' + MODE + "_" + MODEL + "_nsmc_" + file_suffix, 'wb') as f:
-            pickle.dump(history.history, f)
-            # visualize_result(history, fname=file_suffix)
-
+        curr_acc = train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y)
+        if (curr_acc > prev_acc):
+            max_param = params
+        prev_acc = curr_acc
+    max_acc_min_count = max_param['min_count']
 
 if __name__ == "__main__":
 
