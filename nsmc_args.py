@@ -363,7 +363,7 @@ def main():
                             validation_data=(x_test, y_test),
                             callbacks=callbacks_list,
                             verbose=1)
-        with open('./history2/' + MODE + "_" + MODEL + "_nsmc_" + file_suffix, 'wb') as f:
+        with open('./history3/' + MODE + "_" + MODEL + "_nsmc_" + file_suffix, 'wb') as f:
             pickle.dump(history.history, f)
             # visualize_result(history, fname=file_suffix)
 
