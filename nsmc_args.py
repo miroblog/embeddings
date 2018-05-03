@@ -260,21 +260,22 @@ def make_file_suffix(dict):
 
 def main():
     train_data = read_data(PATH + ENTIRE_FILE)
-    saved_tokens = Path("./preprocessed/" + MODE + "_tokens")
-    saved_texts = Path("./preprocessed/" + MODE + "_texts")
+    mode_affix = args.parser + "_" + MODE
+    saved_tokens = Path("./preprocessed/"+mode_affix+ "_tokens")
+    saved_texts = Path("./preprocessed/"+mode_affix+ "_texts")
     if saved_tokens.is_file() and saved_texts.is_file():
-        tokens = pickle.load(open("./preprocessed/" + MODE + "_tokens", "rb"))
-        data_x = pickle.load(open("./training_samples/" + MODE + "_data_x", "rb"))
+        tokens = pickle.load(open("./preprocessed/"+mode_affix+"_tokens", "rb"))
+        data_x = pickle.load(open("./training_samples/"+mode_affix+"_data_x", "rb"))
         max_sequence_length = data_x.shape[1]
         print("max_sequence_length: ", max_sequence_length)
-        data_y = pickle.load(open("./training_samples/" + MODE + "_data_y", "rb"))
-        word_index = pickle.load(open("./training_samples/" + MODE + "_word_index", "rb"))
+        data_y = pickle.load(open("./training_samples/"+mode_affix+ "_data_y", "rb"))
+        word_index = pickle.load(open("./training_samples/"+mode_affix+"_word_index", "rb"))
         # texts = pickle.load(open(MODE+"_texts", "rb"))
     else:
         tokens, texts = process_text(unit=MODE, train_data=train_data)
-        with open("./preprocessed/" + MODE + "_tokens", "wb") as f:
+        with open("./preprocessed/" +mode_affix+ "_tokens", "wb") as f:
             pickle.dump(tokens, f)
-        with open("./preprocessed/" + MODE + "_texts", "wb") as f:
+        with open("./preprocessed/" +mode_affix+ "_texts", "wb") as f:
             pickle.dump(texts, f)
         # prepare data x
         data_x, word_index = create_data_x(texts)
@@ -282,11 +283,11 @@ def main():
         # prepare data y
         y_labels = [row[2] for row in train_data[1:]]  # positive 1, negative 0
         data_y = np_utils.to_categorical(np.asarray(y_labels))
-        with open("./training_samples/" + MODE + "_data_x", "wb") as f:
+        with open("./training_samples/" +mode_affix+ "_data_x", "wb") as f:
             pickle.dump(data_x, f)
-        with open("./training_samples/" + MODE + "_data_y", "wb") as f:
+        with open("./training_samples/" +mode_affix+ "_data_y", "wb") as f:
             pickle.dump(data_y, f)
-        with open("./training_samples/" + MODE + "_word_index", "wb") as f:
+        with open("./training_samples/" +mode_affix+ "_word_index", "wb") as f:
             pickle.dump(word_index, f)
 
     max_workers = max(1, multiprocessing.cpu_count() - 1)
