@@ -357,7 +357,7 @@ def main():
     max_acc_dim = max_param['size']
 
     param_options_window = {
-        'size': max_acc_dim,
+        'size': [max_acc_dim],
         'window': [2, 5, 7, 10],
         'min_count': [20],
         'workers': [max_workers],
@@ -378,8 +378,8 @@ def main():
     max_acc_window = max_param['window']
 
     param_options_min_count = {
-        'size': max_acc_dim,
-        'window': max_acc_window,
+        'size': [max_acc_dim],
+        'window': [max_acc_window],
         'min_count': [10, 20, 50, 100],
         'workers': [max_workers],
         'sample': [1E-3],
