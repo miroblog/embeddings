@@ -85,6 +85,7 @@ def create_word_embeddings(tokens, model_type, params, file_suffix):
         word_vectors.save_word2vec_format("./embeddings/" + MODE + "_" + model_type + "_nsmc_" + file_suffix)
     elif (model_type == "fastText"):
         params['min_n'] = 1
+        params['sg'] = 1
         model = FastText(tokens, **params)
         word_vectors = model.wv
         word_vectors.save_word2vec_format("./embeddings/" + MODE + "_" + model_type + "_nsmc_" + file_suffix)
