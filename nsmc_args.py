@@ -286,12 +286,12 @@ def train_sentiment(params, tokens, word_index, max_sequence_length, data_x, dat
     history = model.fit(x_train,
                         y_train,
                         shuffle=True,
-                        epochs=10,
+                        epochs=20,
                         batch_size=128,
                         validation_data=(x_test, y_test),
                         callbacks=callbacks_list,
                         verbose=1)
-    with open('./history2/' + MODE + "_" + MODEL + "_nsmc_" + file_suffix, 'wb') as f:
+    with open('./history3/' + MODE + "_" + MODEL + "_nsmc_" + file_suffix, 'wb') as f:
         pickle.dump(history.history, f)
         # visualize_result(history, fname=file_suffix)
     # return max validation acc
