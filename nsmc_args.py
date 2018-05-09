@@ -148,7 +148,7 @@ def tokenize_words(sentence):
 def tokenize_morpheme(doc):
     # norm, stem은 optional
     # return ['/'.join(t) for t in twitter.pos(doc, norm=True, stem=True)]
-    return [t for t in parser.morphs(doc, norm=True, stem=True)]
+    return [t for t in parser.morphs(doc)]
 
 
 def word_to_jamo_seqs(word):
@@ -175,6 +175,15 @@ def process_text(unit, train_data):
             token = tokenize_words(train_data[i][1])
             processed_sentence = " ".join(token)
             tokens.append(token)
+            texts.append(processed_sentence)
+    elif(unit =="JAMO_MORPHEME"):
+        for i in tqdm(range(1, len(train_data))):
+            token = tokenize_morpheme(train_data[i][1])
+            jamo_token = []
+            for word in token:
+                jamo_token.append(word_to_jamo_seqs(word))
+            processed_sentence = " ".join(jamo_token)
+            tokens.append(jamo_token)
             texts.append(processed_sentence)
     elif (unit == "JAMO"):
         for i in tqdm(range(1, len(train_data))):
@@ -353,8 +362,8 @@ def main():
     for params in params_list:
         curr_acc = train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y)
         if(curr_acc > prev_acc):
-             max_param = params
-        prev_acc = curr_acc
+            max_param = params
+            prev_acc = curr_acc
     max_acc_dim = max_param['size']
 
     param_options_window = {
@@ -375,7 +384,7 @@ def main():
         curr_acc = train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y)
         if (curr_acc > prev_acc):
             max_param = params
-        prev_acc = curr_acc
+            prev_acc = curr_acc
     max_acc_window = max_param['window']
 
     param_options_min_count = {
@@ -397,7 +406,7 @@ def main():
         curr_acc = train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y)
         if (curr_acc > prev_acc):
             max_param = params
-        prev_acc = curr_acc
+            prev_acc = curr_acc
     max_acc_min_count = max_param['min_count']
 
 if __name__ == "__main__":
