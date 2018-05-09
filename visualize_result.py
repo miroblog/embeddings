@@ -2,6 +2,7 @@ from matplotlib import pyplot
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
+import numpy as np
 
 size_list = [50, 100, 300, 500, 1000]
 window_list = [2, 5, 7, 10]
@@ -88,6 +89,8 @@ def plot_3d_surf(df, size):
     plt.show()
 
 def scatter(df, size, groupBy='window', line=False):
+    max_values = []
+
     size_filtered_df = df[df['size']==size]
 
     type = df['type'].get_values()[0]
@@ -118,6 +121,7 @@ def scatter(df, size, groupBy='window', line=False):
             x = xs[i]
             y = ys[i]
             z = zs[i]
+            max_values.append(max(z))
 
             pivot_order = x.argsort(axis=0)
             x = x[pivot_order].reshape(-1,1)
@@ -148,3 +152,6 @@ def scatter(df, size, groupBy='window', line=False):
         ax.set_zlabel('val_acc')
         ax.set_title("{0}_{1}/{2} dim".format(type, model,str(size)))
     pyplot.show()
+
+    result_order = np.argsort(max_values, axis=0).reshape(-1)
+    return np.array(param_list[groupBy])[result_order]
