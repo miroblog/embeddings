@@ -155,8 +155,8 @@ def word_to_jamo_seqs(word):
 
 
 def process_text(unit, train_data, parser):
-    texts = []  # list of sentences
-    tokens = []  # list of words
+    texts = []  # 1d - list of sentences
+    tokens = []  # 2d - sentence - unit(word/morpheme)
     if (unit == "MORPHEME" or "SYLLABLE+MORPHEME"):
         for i in tqdm(range(1, len(train_data))):
             token = tokenize_morpheme(train_data[i][1], parser)
@@ -406,12 +406,14 @@ if __name__ == "__main__":
     # Output PATH
     PATH_OUT = args.output_path
 
+    PATH_MODEL = "./model/"
+
     # Network Training Params
     BATCH_SIZE = 128
     MAX_EPOCH = 20
     PATIENCE = 5
 
     make_directories([
-        PATH_PREPROCESSED, PATH_TRAINING_SAMPLES, PATH_EMBEDDING, PATH_OUT
+        PATH_PREPROCESSED, PATH_TRAINING_SAMPLES, PATH_EMBEDDING, PATH_OUT, PATH_MODEL
     ])
     main()
