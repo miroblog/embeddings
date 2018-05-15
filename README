@@ -53,4 +53,7 @@ https://github.com/miroblog/embeddings/blob/master/notebook_visualize.ipynb
 ./entire_history/ : dumped history
 ./nsmc/ : training corpus, naver movie review
 
+
+# Results are in : ./result_csv/
+
   
