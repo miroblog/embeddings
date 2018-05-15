@@ -20,18 +20,18 @@
 
 
 
-1.python nsmc_args.py -m word2vec -u WORD -o history -v sg
-2.python nsmc_args.py -m word2vec -u WORD -o history -v cbow
-3.python nsmc_args.py -m glove -u WORD -o history -v cbow
-4.python nsmc_args.py -m fastText -u SYLLABLE -o history -v sg
-5.python nsmc_args.py -m fastText -u JAMO -o history -v sg 
-6.python nsmc_args.py -p twitter -m word2vec -u MORPHEME -o history -v sg
-7.python nsmc_args.py -p twitter -m word2vec -u MORPHEME -o history -v cbow
-8.python nsmc_args.py -p twitter -m glove -u MORPHEME -o history
-9.python nsmc_args.py -p twitter -m fastText -u SYLLABLE+MORPHEME -o history -v sg
-10.python nsmc_args.py -p twitter -m fastText -u JAMO+MORPHEME -o history -v sg
+1. python nsmc_args.py -m word2vec -u WORD -o history -v sg
+2. python nsmc_args.py -m word2vec -u WORD -o history -v cbow
+3. python nsmc_args.py -m glove -u WORD -o history -v cbow
+4. python nsmc_args.py -m fastText -u SYLLABLE -o history -v sg
+5. python nsmc_args.py -m fastText -u JAMO -o history -v sg 
+6. python nsmc_args.py -p twitter -m word2vec -u MORPHEME -o history -v sg
+7. python nsmc_args.py -p twitter -m word2vec -u MORPHEME -o history -v cbow
+8. python nsmc_args.py -p twitter -m glove -u MORPHEME -o history
+9. python nsmc_args.py -p twitter -m fastText -u SYLLABLE+MORPHEME -o history -v sg
+10. python nsmc_args.py -p twitter -m fastText -u JAMO+MORPHEME -o history -v sg
 
-minimum n gram: python nsmc_args.py -p twitter -m fastText -u JAMO+MORPHEME -o history -v sg -min 1
+1. minimum n gram: python nsmc_args.py -p twitter -m fastText -u JAMO+MORPHEME -o history -v sg -min 1
 
 <hr/>
 ### Third: extract history, (dumped history files to a single .csv file)
