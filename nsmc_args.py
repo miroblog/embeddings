@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from tqdm import tqdm
+import nltk
 import re
 import pickle
 
@@ -85,10 +86,11 @@ def create_word_embeddings(tokens, model_type, params, file_suffix):
         word_vectors = model.wv
         word_vectors.save_word2vec_format("./embeddings/" + MODE + "_" + model_type + "_nsmc_" + file_suffix)
     elif (model_type == "glove"):
+        dict = restrict_rare_words(params["min_count"], tokens)
         nb_components = params['size']
         no_threads = params['workers']
         window = params['window']
-        corpus = Corpus()
+        corpus = Corpus(dictionary=dict)
         corpus.fit(tokens, window=window)
         glove = Glove(no_components=nb_components, learning_rate=0.05)
         glove.fit(corpus.matrix, epochs=5, no_threads=no_threads, verbose=True)
@@ -96,6 +98,19 @@ def create_word_embeddings(tokens, model_type, params, file_suffix):
         save_word2vec_format(glove, "./embeddings/" + MODE + "_" + model_type + "_nsmc_" + file_suffix)
     else:
         raise ValueError
+
+
+# returns dictionary
+def restrict_rare_words(min_count, tokens):
+    flattend_list = [j for i in tokens for j in i]
+    freq_dist = nltk.FreqDist(flattend_list)
+    common_word = {}
+    i = 0
+    for word, count in freq_dist.most_common()[-1::-1]:
+        if (count > min_count):
+            common_word[word] = i
+            i += 1
+    return common_word
 
 
 def create_model(word_index, embed_dim, max_sequence_length, embedding_matrix):
