@@ -1,2 +1,2 @@
 pip install -r requirements.txt
-python nsmc_embeddings.py
+python nsmc_args.py -p twitter -m fastText -u MORPHEME

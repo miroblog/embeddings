@@ -344,8 +344,8 @@ def main():
     # # embedding size
     param_options_dimension = {
         'size': [50, 100, 300, 500, 1000],
-        'window': [5],
-        'min_count': [20],
+        'window': [2, 5, 7, 10],
+        'min_count': [10, 20, 50, 100],
         'workers': [max_workers],
         'sample': [1E-3],
         'iter': [5]
@@ -364,50 +364,50 @@ def main():
         if(curr_acc > prev_acc):
             max_param = params
             prev_acc = curr_acc
-    max_acc_dim = max_param['size']
+    # max_acc_dim = max_param['size']
 
-    param_options_window = {
-        'size': [max_acc_dim],
-        'window': [2, 5, 7, 10],
-        'min_count': [20],
-        'workers': [max_workers],
-        'sample': [1E-3],
-        'iter': [5]
-    }
-    params_window_list = make_parmas(param_options_window)
-    params_list = []
-    params_list.extend(params_window_list)
-
-    prev_acc = 0
-    max_param = None
-    for params in params_list:
-        curr_acc = train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y)
-        if (curr_acc > prev_acc):
-            max_param = params
-            prev_acc = curr_acc
-    max_acc_window = max_param['window']
-
-    param_options_min_count = {
-        'size': [max_acc_dim],
-        'window': [max_acc_window],
-        'min_count': [10, 20, 50, 100],
-        'workers': [max_workers],
-        'sample': [1E-3],
-        'iter': [5]
-    }
-
-    params_min_count_list = make_parmas(param_options_min_count)
-    params_list = []
-    params_list.extend(params_min_count_list)
-
-    prev_acc = 0
-    max_param = None
-    for params in params_list:
-        curr_acc = train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y)
-        if (curr_acc > prev_acc):
-            max_param = params
-            prev_acc = curr_acc
-    max_acc_min_count = max_param['min_count']
+    # param_options_window = {
+    #     'size': [max_acc_dim],
+    #     'window': [2, 5, 7, 10],
+    #     'min_count': [20],
+    #     'workers': [max_workers],
+    #     'sample': [1E-3],
+    #     'iter': [5]
+    # }
+    # params_window_list = make_parmas(param_options_window)
+    # params_list = []
+    # params_list.extend(params_window_list)
+    #
+    # prev_acc = 0
+    # max_param = None
+    # for params in params_list:
+    #     curr_acc = train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y)
+    #     if (curr_acc > prev_acc):
+    #         max_param = params
+    #         prev_acc = curr_acc
+    # max_acc_window = max_param['window']
+    #
+    # param_options_min_count = {
+    #     'size': [max_acc_dim],
+    #     'window': [max_acc_window],
+    #     'min_count': [10, 20, 50, 100],
+    #     'workers': [max_workers],
+    #     'sample': [1E-3],
+    #     'iter': [5]
+    # }
+    #
+    # params_min_count_list = make_parmas(param_options_min_count)
+    # params_list = []
+    # params_list.extend(params_min_count_list)
+    #
+    # prev_acc = 0
+    # max_param = None
+    # for params in params_list:
+    #     curr_acc = train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y)
+    #     if (curr_acc > prev_acc):
+    #         max_param = params
+    #         prev_acc = curr_acc
+    # max_acc_min_count = max_param['min_count']
 
 if __name__ == "__main__":
 
