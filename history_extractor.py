@@ -4,9 +4,6 @@ import re
 import pickle
 import pandas as pd
 
-PATH = "./entire_history/"
-
-
 def parse_file_name(file_name):
     tokens = re.split("[_,]", file_name)
     param = {}
@@ -22,7 +19,7 @@ def parse_file_name(file_name):
     return param
 
 def get_final_result(file):
-    history = pickle.load(open(PATH+file, "rb"))
+    history = pickle.load(open(PATH+"/"+file, "rb"))
     result = {}
     result['val_loss'] = max(history['val_loss'])
     result['val_acc'] = max(history['val_acc'])
@@ -30,8 +27,8 @@ def get_final_result(file):
     result['loss'] = max(history['loss'])
     return result
 
-def main():
-    files = os.listdir(PATH)
+def main(path):
+    files = os.listdir(path)
     df = pd.DataFrame()
     for filename in files:
         param = parse_file_name(filename)
@@ -52,8 +49,15 @@ def main():
     df = df[['type', 'model', 'window', 'size', 'count', 'acc', 'loss', 'val_acc', 'val_loss']]
     df = df.drop_duplicates(subset=['type', 'model', 'window', 'size', 'count'],
                             keep='first',inplace=False)
-    df.to_csv("history_result.csv")
+    df.to_csv(args.out_name+".csv")
+    print("check for:",args.out_name+".csv")
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p", "--path", default="./history", help="specify history directory")
+    parser.add_argument("-o", "--out_name", default="history_result", help="output file name")
+    args = parser.parse_args()
+    PATH = args.path
+    main(path = PATH)
 
