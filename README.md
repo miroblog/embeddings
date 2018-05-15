@@ -1,6 +1,8 @@
 
 ### Frist : pip install -r requirements.txt
+
 ***
+
 ### Second :
 
 |          | skipgram | cbow | glove | fastText(syll) | fastText(jamo) |
@@ -32,7 +34,9 @@
 10. python nsmc_args.py -p twitter -m fastText -u JAMO+MORPHEME -o history -v sg
 
 #### minimum n gram: python nsmc_args.py -p twitter -m fastText -u JAMO+MORPHEME -o history -v sg -min 1
+
 ***
+
 ### Third: extract history, (dumped history files to a single .csv file)
 
 1. -p : path for history
@@ -40,10 +44,13 @@
 
 #### python history_extractor.py -p ./entire_history -o history
 
+***
+
 ### Fourth : visualize result
 1. https://github.com/miroblog/embeddings/blob/master/notebook_visualize.ipynb
 
 ***
+
 ### PATH 
 
 1. ./training_samples/ : data x, label y for the lstm
@@ -53,6 +60,7 @@
 5. ./nsmc/ : training corpus, naver movie review
 
 ***
+
 ### Results are in : ./result_csv/
 
   
