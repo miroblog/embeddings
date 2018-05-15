@@ -1,24 +1,23 @@
 
-Frist : pip install -r requirements.txt
+#Frist : pip install -r requirements.txt
+
+<hr/>
+#Second :
+
+|          | skipgram | cbow | glove | fastText(syll) | fastText(jamo) |
+|:--------:|:--------:|:----:|:-----:|:--------------:|:--------------:|
+|   word   |    (1)   |  (2) |  (3)  |       (4)      |       (5)      |
+| morpheme |    (6)   |  (7) |  (8)  |       (9)      |      (10)      |
 
 
-Second :
-
-|               | Skipgram      | CBOW          | Glove         | fastText(syll)|fastText(jamo) |
-| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| WORD          | (1)           | (2)           | (3)           | (4)           | (5)           |
-| MORPHEME      | (6)           | (7)           | (8)           | (9)           | (10)          |
-
-
-
-''' 
+<pre><code>
     parser.add_argument("-p", "--parser", default="twitter", help="morpheme parser: kkma, komoran, twitter")
     parser.add_argument("-m", "--model", help="model name : word2vec, fastText, glove")
     parser.add_argument("-u", "--unit", help="unit : WORD, MORPHEME, SYLLABLE, JAMO")
     parser.add_argument("-o", "--output_path", help="output path")
     parser.add_argument("-v", "--variation", default='sg', help="variation : sg, cbow")
     parser.add_argument("-min", "--min_ngram", default=1, help="minimum n gram: 1~3")
-'''	
+</pre></code>
 
 
 
@@ -35,7 +34,8 @@ Second :
 
 minimum n gram: python nsmc_args.py -p twitter -m fastText -u JAMO+MORPHEME -o history -v sg -min 1
 
-Third: extract history, (dumped history files to a single .csv file)
+<hr/>
+#Third: extract history, (dumped history files to a single .csv file)
 
 -p : path for history
 -o : output file name
@@ -46,7 +46,8 @@ Fourth : visualize result
 https://github.com/miroblog/embeddings/blob/master/notebook_visualize.ipynb
 
 
-# PATH 
+<hr/>
+#PATH 
 
 ./training_samples/ : data x, label y for the lstm
 ./preprocessed/ : processed texts and tokens
@@ -54,7 +55,7 @@ https://github.com/miroblog/embeddings/blob/master/notebook_visualize.ipynb
 ./entire_history/ : dumped history
 ./nsmc/ : training corpus, naver movie review
 
-
-# Results are in : ./result_csv/
+<hr/>
+#Results are in : ./result_csv/
 
   
