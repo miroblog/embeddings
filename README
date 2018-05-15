@@ -51,4 +51,6 @@ https://github.com/miroblog/embeddings/blob/master/notebook_visualize.ipynb
 ./preprocessed/ : processed texts and tokens
 ./embeddings/ : embeddings in word2vec text format, used for making an embedding layer
 ./entire_history/ : dumped history
+./nsmc/ : training corpus, naver movie review
+
   
