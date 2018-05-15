@@ -20,16 +20,16 @@
 
 
 
-(1) python nsmc_args.py -m word2vec -u WORD -o history -v sg
-(2) python nsmc_args.py -m word2vec -u WORD -o history -v cbow
-(3) python nsmc_args.py -m glove -u WORD -o history -v cbow
-(4) python nsmc_args.py -m fastText -u SYLLABLE -o history -v sg
-(5) python nsmc_args.py -m fastText -u JAMO -o history -v sg 
-(6) python nsmc_args.py -p twitter -m word2vec -u MORPHEME -o history -v sg
-(7) python nsmc_args.py -p twitter -m word2vec -u MORPHEME -o history -v cbow
-(8) python nsmc_args.py -p twitter -m glove -u MORPHEME -o history
-(9) python nsmc_args.py -p twitter -m fastText -u SYLLABLE+MORPHEME -o history -v sg
-(10) python nsmc_args.py -p twitter -m fastText -u JAMO+MORPHEME -o history -v sg
+1.python nsmc_args.py -m word2vec -u WORD -o history -v sg
+2.python nsmc_args.py -m word2vec -u WORD -o history -v cbow
+3.python nsmc_args.py -m glove -u WORD -o history -v cbow
+4.python nsmc_args.py -m fastText -u SYLLABLE -o history -v sg
+5.python nsmc_args.py -m fastText -u JAMO -o history -v sg 
+6.python nsmc_args.py -p twitter -m word2vec -u MORPHEME -o history -v sg
+7.python nsmc_args.py -p twitter -m word2vec -u MORPHEME -o history -v cbow
+8.python nsmc_args.py -p twitter -m glove -u MORPHEME -o history
+9.python nsmc_args.py -p twitter -m fastText -u SYLLABLE+MORPHEME -o history -v sg
+10.python nsmc_args.py -p twitter -m fastText -u JAMO+MORPHEME -o history -v sg
 
 minimum n gram: python nsmc_args.py -p twitter -m fastText -u JAMO+MORPHEME -o history -v sg -min 1
 
@@ -48,13 +48,13 @@ https://github.com/miroblog/embeddings/blob/master/notebook_visualize.ipynb
 <hr/>
 ### PATH 
 
-./training_samples/ : data x, label y for the lstm
-./preprocessed/ : processed texts and tokens
-./embeddings/ : embeddings in word2vec text format, used for making an embedding layer
-./entire_history/ : dumped history
-./nsmc/ : training corpus, naver movie review
+1. ./training_samples/ : data x, label y for the lstm
+2. ./preprocessed/ : processed texts and tokens
+3. ./embeddings/ : embeddings in word2vec text format, used for making an embedding layer
+4. ./entire_history/ : dumped history
+5. ./nsmc/ : training corpus, naver movie review
 
 <hr/>
-# Results are in : ./result_csv/
+### Results are in : ./result_csv/
 
   
