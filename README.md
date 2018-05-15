@@ -1,7 +1,6 @@
 
 ### Frist : pip install -r requirements.txt
 
-<hr/>
 ### Second :
 
 |          | skipgram | cbow | glove | fastText(syll) | fastText(jamo) |
