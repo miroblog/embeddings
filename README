@@ -33,6 +33,7 @@ Second :
 (9) python nsmc_args.py -p twitter -m fastText -u SYLLABLE+MORPHEME -o history -v sg
 (10) python nsmc_args.py -p twitter -m fastText -u JAMO+MORPHEME -o history -v sg
 
+minimum n gram: python nsmc_args.py -p twitter -m fastText -u JAMO+MORPHEME -o history -v sg -min 1
 
 Third: extract history, (dumped history files to a single .csv file)
 

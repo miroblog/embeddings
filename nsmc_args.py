@@ -91,7 +91,7 @@ def create_word_embeddings(tokens, model_type, params, file_suffix):
         no_threads = params['workers']
         window = params['window']
         corpus = Corpus(dictionary=dict)
-        corpus.fit(tokens, window=window)
+        corpus.fit(tokens, window=window, ignore_missing=True)
         glove = Glove(no_components=nb_components, learning_rate=0.05)
         glove.fit(corpus.matrix, epochs=5, no_threads=no_threads, verbose=True)
         glove.add_dictionary(corpus.dictionary)
