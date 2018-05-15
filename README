@@ -1,2 +1,54 @@
-pip install -r requirements.txt
-python nsmc_args.py -p twitter -m fastText -u MORPHEME
+
+Frist : pip install -r requirements.txt
+
+
+Second :
+
+|               | Skipgram      | CBOW          | Glove         | fastText(syll)|fastText(jamo) |
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+| WORD          | (1)           | (2)           | (3)           | (4)           | (5)           |
+| MORPHEME      | (6)           | (7)           | (8)           | (9)           | (10)          |
+
+
+
+''' 
+    parser.add_argument("-p", "--parser", default="twitter", help="morpheme parser: kkma, komoran, twitter")
+    parser.add_argument("-m", "--model", help="model name : word2vec, fastText, glove")
+    parser.add_argument("-u", "--unit", help="unit : WORD, MORPHEME, SYLLABLE, JAMO")
+    parser.add_argument("-o", "--output_path", help="output path")
+    parser.add_argument("-v", "--variation", default='sg', help="variation : sg, cbow")
+    parser.add_argument("-min", "--min_ngram", default=1, help="minimum n gram: 1~3")
+'''	
+
+
+
+(1) python nsmc_args.py -m word2vec -u WORD -o history -v sg
+(2) python nsmc_args.py -m word2vec -u WORD -o history -v cbow
+(3) python nsmc_args.py -m glove -u WORD -o history -v cbow
+(4) python nsmc_args.py -m fastText -u SYLLABLE -o history -v sg
+(5) python nsmc_args.py -m fastText -u JAMO -o history -v sg 
+(6) python nsmc_args.py -p twitter -m word2vec -u MORPHEME -o history -v sg
+(7) python nsmc_args.py -p twitter -m word2vec -u MORPHEME -o history -v cbow
+(8) python nsmc_args.py -p twitter -m glove -u MORPHEME -o history
+(9) python nsmc_args.py -p twitter -m fastText -u SYLLABLE+MORPHEME -o history -v sg
+(10) python nsmc_args.py -p twitter -m fastText -u JAMO+MORPHEME -o history -v sg
+
+
+Third: extract history, (dumped history files to a single .csv file)
+
+-p : path for history
+-o : output file name
+
+python history_extractor.py -p ./entire_history -o history
+
+Fourth : visualize result
+https://github.com/miroblog/embeddings/blob/master/notebook_visualize.ipynb
+
+
+# PATH 
+
+./training_samples/ : data x, label y for the lstm
+./preprocessed/ : processed texts and tokens
+./embeddings/ : embeddings in word2vec text format, used for making an embedding layer
+./entire_history/ : dumped history
+  

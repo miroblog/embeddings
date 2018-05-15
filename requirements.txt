@@ -23,6 +23,7 @@ gensim==3.4.0
 glove==1.0.2
 glove-python==0.1.0
 guacamole==0.9.2
+h5py==2.7.1
 hanja==0.11.0
 hgtk==0.1.1
 html5lib==0.9999999
@@ -48,6 +49,7 @@ numpy==1.14.2
 oauthlib==1.0.3
 onboard==1.2.0
 padme==1.1.1
+pandas==0.22.0
 pbr==3.1.1
 pexpect==4.0.1
 Pillow==3.1.2
