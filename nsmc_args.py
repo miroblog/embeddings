@@ -1,20 +1,10 @@
 # -*- coding: utf-8 -*-
 
-
-PATH = "./nsmc/"
-ENTIRE_FILE = 'ratings.txt'
-TRAIN_FILE = "ratings_train.txt"
-TEST_FILE = "ratings_test.txt"
-
-# MAX_SEQUENCE_LENGTH = 50
-# EMBEDDING_DIM = 300
-
 from tqdm import tqdm
 import re
 import pickle
-import time
 
-import keras
+# keras
 from keras.models import *
 from keras.layers import *
 from keras.utils import np_utils
@@ -22,18 +12,24 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import Tokenizer
 from keras.callbacks import ModelCheckpoint
 from keras.callbacks import EarlyStopping
-from sklearn.model_selection import train_test_split
-import tensorflow as tf
 from keras import backend as K
 
+# sklearn
+from sklearn.model_selection import train_test_split
+import tensorflow as tf
+
+# konlpy
 from konlpy.tag import Twitter, Kkma, Komoran
 import hgtk
 from kor_romanize import Romanizer
+
+# embedding models
 from gensim.models import Word2Vec, FastText
 from gensim.models import KeyedVectors
-import multiprocessing
 from glove import Corpus, Glove
 
+# os
+import multiprocessing
 from pathlib import Path
 
 
@@ -76,16 +72,15 @@ def save_word2vec_format(glove, filename):
         """
 '''
 
-
 def create_word_embeddings(tokens, model_type, params, file_suffix):
     if (model_type == "word2vec"):
-        params['sg'] = 1 # use skipgram
+        params['sg'] = UseSkipGram # 1 : skipgram, 0 : cbow
         model = Word2Vec(tokens, **params)
         word_vectors = model.wv
         word_vectors.save_word2vec_format("./embeddings/" + MODE + "_" + model_type + "_nsmc_" + file_suffix)
     elif (model_type == "fastText"):
         params['min_n'] = 1
-        params['sg'] = 1
+        params['sg'] = UseSkipGram
         model = FastText(tokens, **params)
         word_vectors = model.wv
         word_vectors.save_word2vec_format("./embeddings/" + MODE + "_" + model_type + "_nsmc_" + file_suffix)
@@ -145,9 +140,7 @@ def tokenize_words(sentence):
     return re.findall('\w+', sentence)
 
 
-def tokenize_morpheme(doc):
-    # norm, stem은 optional
-    # return ['/'.join(t) for t in twitter.pos(doc, norm=True, stem=True)]
+def tokenize_morpheme(doc, parser):
     return [t for t in parser.morphs(doc)]
 
 
@@ -161,12 +154,12 @@ def word_to_jamo_seqs(word):
     return "".join(temp)
 
 
-def process_text(unit, train_data):
+def process_text(unit, train_data, parser):
     texts = []  # list of sentences
     tokens = []  # list of words
-    if (unit == "MORPHEME"):
+    if (unit == "MORPHEME" or "SYLLABLE+MORPHEME"):
         for i in tqdm(range(1, len(train_data))):
-            token = tokenize_morpheme(train_data[i][1])
+            token = tokenize_morpheme(train_data[i][1], parser)
             processed_sentence = " ".join(token)
             tokens.append(token)
             texts.append(processed_sentence)
@@ -176,9 +169,9 @@ def process_text(unit, train_data):
             processed_sentence = " ".join(token)
             tokens.append(token)
             texts.append(processed_sentence)
-    elif(unit =="JAMO_MORPHEME"):
+    elif(unit =="JAMO+MORPHEME"):
         for i in tqdm(range(1, len(train_data))):
-            token = tokenize_morpheme(train_data[i][1])
+            token = tokenize_morpheme(train_data[i][1], parser)
             jamo_token = []
             for word in token:
                 jamo_token.append(word_to_jamo_seqs(word))
@@ -268,81 +261,88 @@ def make_file_suffix(dict):
     return suffix
 
 
-def train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y):
+def train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y, verbose=False):
     file_suffix = make_file_suffix(params)
-    print("running : " + file_suffix)
+    if(verbose):
+        print("running : " + file_suffix)
     create_word_embeddings(tokens=tokens, model_type=MODEL, params=params, file_suffix=file_suffix)
     # compute embedding matrix
     word_vectors = load_word_vectors("./embeddings/" + MODE + "_" + MODEL + "_nsmc_" + file_suffix)
     embedding_matrix = compute_embedding_matrix(word_vectors=word_vectors, embedding_dimension=params['size'],
                                                 word_index=word_index)
-    # define network
 
     # memory issues
     K.clear_session()
     sess = tf.Session()
     K.set_session(sess)
 
+    # define network
     model = create_model(word_index, params['size'], max_sequence_length, embedding_matrix)
+
     # train test split
     x_train, x_test, y_train, y_test = train_test_split(data_x, data_y, shuffle=False, test_size=0.25)
 
     filepath = "./model/{0}_{1}_{2}.hdf5".format(MODE, MODEL, file_suffix)
     checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True,
                                  mode='auto')
-    early_stopping = EarlyStopping(monitor='val_acc', patience=5, verbose=1, mode='auto')
+    early_stopping = EarlyStopping(monitor='val_acc', patience=PATIENCE, verbose=1, mode='auto')
     callbacks_list = [checkpoint, early_stopping]
 
     history = model.fit(x_train,
                         y_train,
                         shuffle=True,
-                        epochs=20,
-                        batch_size=128,
+                        epochs=MAX_EPOCH,
+                        batch_size=BATCH_SIZE,
                         validation_data=(x_test, y_test),
                         callbacks=callbacks_list,
                         verbose=1)
-    with open('./history3/' + MODE + "_" + MODEL + "_nsmc_" + file_suffix, 'wb') as f:
+    with open('./'+ PATH_OUT + MODE + "_" + MODEL + "_nsmc_" + file_suffix, 'wb') as f:
         pickle.dump(history.history, f)
-        # visualize_result(history, fname=file_suffix)
-    # return max validation acc
     return max(history.history['val_acc'])
 
 def main():
+    # read data by sentences
     train_data = read_data(PATH + ENTIRE_FILE)
     mode_affix = args.parser + "_" + MODE
-    saved_tokens = Path("./preprocessed/"+mode_affix+ "_tokens")
-    saved_texts = Path("./preprocessed/"+mode_affix+ "_texts")
+
+    # check for preprocessed text
+    saved_tokens = Path(PATH_PREPROCESSED + mode_affix+ "_tokens")
+    saved_texts = Path(PATH_PREPROCESSED + mode_affix+ "_texts")
+    # load, if already exists
     if saved_tokens.is_file() and saved_texts.is_file():
-        tokens = pickle.load(open("./preprocessed/"+mode_affix+"_tokens", "rb"))
-        data_x = pickle.load(open("./training_samples/"+mode_affix+"_data_x", "rb"))
+        tokens = pickle.load(open(PATH_PREPROCESSED + mode_affix+"_tokens", "rb"))
+        data_x = pickle.load(open(PATH_TRAINING_SAMPLES + mode_affix+"_data_x", "rb"))
         max_sequence_length = data_x.shape[1]
         print("max_sequence_length: ", max_sequence_length)
-        data_y = pickle.load(open("./training_samples/"+mode_affix+ "_data_y", "rb"))
-        word_index = pickle.load(open("./training_samples/"+mode_affix+"_word_index", "rb"))
-        # texts = pickle.load(open(MODE+"_texts", "rb"))
+        data_y = pickle.load(open(PATH_TRAINING_SAMPLES + mode_affix+ "_data_y", "rb"))
+        word_index = pickle.load(open(PATH_TRAINING_SAMPLES + mode_affix+"_word_index", "rb"))
+    # make, if isn't processed
     else:
-        tokens, texts = process_text(unit=MODE, train_data=train_data)
-        with open("./preprocessed/" +mode_affix+ "_tokens", "wb") as f:
+        tokens, texts = process_text(unit=MODE, train_data=train_data, parser=parser)
+        with open(PATH_PREPROCESSED +mode_affix+ "_tokens", "wb") as f:
             pickle.dump(tokens, f)
-        with open("./preprocessed/" +mode_affix+ "_texts", "wb") as f:
+        with open(PATH_PREPROCESSED +mode_affix+ "_texts", "wb") as f:
             pickle.dump(texts, f)
+
         # prepare data x
         data_x, word_index = create_data_x(texts)
         max_sequence_length = data_x.shape[1]
+
         # prepare data y
         y_labels = [row[2] for row in train_data[1:]]  # positive 1, negative 0
         data_y = np_utils.to_categorical(np.asarray(y_labels))
-        with open("./training_samples/" +mode_affix+ "_data_x", "wb") as f:
+
+        # dump for later usage
+        with open(PATH_TRAINING_SAMPLES +mode_affix+ "_data_x", "wb") as f:
             pickle.dump(data_x, f)
-        with open("./training_samples/" +mode_affix+ "_data_y", "wb") as f:
+        with open(PATH_TRAINING_SAMPLES +mode_affix+ "_data_y", "wb") as f:
             pickle.dump(data_y, f)
-        with open("./training_samples/" +mode_affix+ "_word_index", "wb") as f:
+        with open(PATH_TRAINING_SAMPLES +mode_affix+ "_word_index", "wb") as f:
             pickle.dump(word_index, f)
 
+    # make parameters
     max_workers = max(1, multiprocessing.cpu_count() - 1)
-
-    # # embedding size
-    param_options_dimension = {
+    param_options = {
         'size': [50, 100, 300, 500, 1000],
         'window': [2, 5, 7, 10],
         'min_count': [10, 20, 50, 100],
@@ -350,82 +350,68 @@ def main():
         'sample': [1E-3],
         'iter': [5]
     }
-    params_dimension_list = make_parmas(param_options_dimension)
+    params_list = make_parmas(param_options)
 
-    params_list = []
-    params_list.extend(params_dimension_list)
-    # params = {'size': 300, 'window': 5, 'min_count': 4,
-    #           'workers': max(1, multiprocessing.cpu_count() - 1), 'sample': 1E-3}  # 'iter':5
-
-    prev_acc = 0
-    max_param = None
+    # run all parameter combinations
     for params in params_list:
-        curr_acc = train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y)
-        if(curr_acc > prev_acc):
-            max_param = params
-            prev_acc = curr_acc
-    # max_acc_dim = max_param['size']
+        train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y)
 
-    # param_options_window = {
-    #     'size': [max_acc_dim],
-    #     'window': [2, 5, 7, 10],
-    #     'min_count': [20],
-    #     'workers': [max_workers],
-    #     'sample': [1E-3],
-    #     'iter': [5]
-    # }
-    # params_window_list = make_parmas(param_options_window)
-    # params_list = []
-    # params_list.extend(params_window_list)
-    #
-    # prev_acc = 0
-    # max_param = None
-    # for params in params_list:
-    #     curr_acc = train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y)
-    #     if (curr_acc > prev_acc):
-    #         max_param = params
-    #         prev_acc = curr_acc
-    # max_acc_window = max_param['window']
-    #
-    # param_options_min_count = {
-    #     'size': [max_acc_dim],
-    #     'window': [max_acc_window],
-    #     'min_count': [10, 20, 50, 100],
-    #     'workers': [max_workers],
-    #     'sample': [1E-3],
-    #     'iter': [5]
-    # }
-    #
-    # params_min_count_list = make_parmas(param_options_min_count)
-    # params_list = []
-    # params_list.extend(params_min_count_list)
-    #
-    # prev_acc = 0
-    # max_param = None
-    # for params in params_list:
-    #     curr_acc = train_sentiment(params, tokens, word_index, max_sequence_length, data_x, data_y)
-    #     if (curr_acc > prev_acc):
-    #         max_param = params
-    #         prev_acc = curr_acc
-    # max_acc_min_count = max_param['min_count']
+# takes list of directory name
+def make_directories(directories):
+    for directory in directories:
+        try:
+            os.mkdir(directory)
+        except:
+            print("Path already exists :", directory)
+    print("made following directories : "+str(directories))
 
 if __name__ == "__main__":
 
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--parser", help="morpheme parser: kkma, komoran, twitter")
+    parser.add_argument("-p", "--parser", default="twitter", help="morpheme parser: kkma, komoran, twitter")
     parser.add_argument("-m", "--model", help="model name : word2vec, fastText, glove")
     parser.add_argument("-u", "--unit", help="unit : WORD, MORPHEME, SYLLABLE, JAMO")
+    parser.add_argument("-o", "--output_path", help="output path")
+    parser.add_argument("-v", "--variation", default='sg', help="variation : sg, cbow")
+    parser.add_argument("-min", "--min_ngram", default=1, help="minimum n gram: 1~3")
     args = parser.parse_args()
     MODE = args.unit #"MORPHEME"
     MODEL = args.model #"fastText"
+    Minimum_N_Gram = args.min_ngram
+    UseSkipGram = 1 if args.variation == "sg" else 0 # "sg"
 
+    print(str(args))
     if(args.parser == "kkma"):
         parser = Kkma()
     elif(args.parser == "komoran"):
         parser = Komoran()
     else:
         parser = Twitter()
-    # model = keras.models.load_model('./model/' +"WORD_300"  + ".hdf5")
-    # print(model.summary())
+
+    # Data
+    PATH = "./nsmc/"
+    ENTIRE_FILE = 'ratings.txt'
+    TRAIN_FILE = "ratings_train.txt"
+    TEST_FILE = "ratings_test.txt"
+
+    # Processed text
+    PATH_PREPROCESSED = "./preprocessed/"
+    # Training samples
+    PATH_TRAINING_SAMPLES = "./training_samples/"
+
+    # Embeddings PATH, trained gensim model in w2vec format
+    PATH_EMBEDDING = "./embeddings/"
+
+    # Output PATH
+    PATH_OUT = args.output_path
+
+    # Network Training Params
+    BATCH_SIZE = 128
+    MAX_EPOCH = 20
+    PATIENCE = 5
+
+    make_directories([
+        PATH_PREPROCESSED, PATH_TRAINING_SAMPLES, PATH_EMBEDDING, PATH_OUT
+    ])
     main()
