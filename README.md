@@ -36,13 +36,13 @@ minimum n gram: python nsmc_args.py -p twitter -m fastText -u JAMO+MORPHEME -o h
 <hr/>
 ### Third: extract history, (dumped history files to a single .csv file)
 
--p : path for history
--o : output file name
+1. -p : path for history
+2. -o : output file name
 
-python history_extractor.py -p ./entire_history -o history
+1. python history_extractor.py -p ./entire_history -o history
 
 ### Fourth : visualize result
-https://github.com/miroblog/embeddings/blob/master/notebook_visualize.ipynb
+1. https://github.com/miroblog/embeddings/blob/master/notebook_visualize.ipynb
 
 
 <hr/>
