@@ -1,9 +1,9 @@
 
-### Frist : pip install -r requirements.txt
+### First : pip install -r requirements.txt
 
 ***
 
-### Second :
+### Second : make embeddings and do sentiment analysis
 
 |          | skipgram | cbow | glove | fastText(syll) | fastText(jamo) |
 |:--------:|:--------:|:----:|:-----:|:--------------:|:--------------:|
