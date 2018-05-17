@@ -311,7 +311,7 @@ def train_sentiment(params, tokens, word_index, max_sequence_length, data_x, dat
                         validation_data=(x_test, y_test),
                         callbacks=callbacks_list,
                         verbose=1)
-    with open('./'+ PATH_OUT + MODE + "_" + MODEL + "_nsmc_" + file_suffix, 'wb') as f:
+    with open('./'+ PATH_OUT + "/" + MODE + "_" + MODEL + "_nsmc_" + file_suffix, 'wb') as f:
         pickle.dump(history.history, f)
     return max(history.history['val_acc'])
 
