@@ -172,7 +172,7 @@ def word_to_jamo_seqs(word):
 def process_text(unit, train_data, parser):
     texts = []  # 1d - list of sentences
     tokens = []  # 2d - sentence - unit(word/morpheme)
-    if (unit == "MORPHEME" or "SYLLABLE+MORPHEME"):
+    if (unit == "MORPHEME" or unit == "SYLLABLE+MORPHEME"):
         for i in tqdm(range(1, len(train_data))):
             token = tokenize_morpheme(train_data[i][1], parser)
             processed_sentence = " ".join(token)
