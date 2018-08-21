@@ -1,7 +1,10 @@
-## In short this repo aims to verify embedding quality by Sentiment Analysis Tasks 
-Embedding Models: Word2Vec, Fasttext, Glove
-Hyper-parameters: unit, window size, embedding dim, minimum occurence, sg/cbow, ngram   
-Short Slides[https://github.com/miroblog/embeddings/blob/master/%ED%95%9C%EA%B5%AD%EC%96%B4%20%ED%98%95%ED%83%9C%EC%A0%81%20%ED%8A%B9%EC%A7%95%EC%9D%84%20%EB%B0%98%EC%98%81%ED%95%9C%20%EB%8B%A8%EC%96%B4%20%EC%9E%84%EB%B2%A0%EB%94%A9%20%EB%AA%A8%EB%8D%B8(Skipgram%20%20Glove%20%20Fasttext)%EC%9D%98%20%ED%86%B5%ED%95%A9%EC%A0%81%20%EA%B3%A0%EC%B0%B0%20%20%E2%80%93%EB%A7%A4%EA%B0%9C%EB%B3%80%EC%88%98%20%EC%A1%B0%EC%A0%88%EA%B3%BC%20%EA%B0%90%EC%A0%95%EB%B6%84%EC%84%9D.pdf]
+## In short ...
+
+This repo aims to verify embedding quality by Sentiment Analysis Tasks   
+Embedding Models: Word2Vec, Fasttext, Glove  
+Hyper-parameters: unit, window size, embedding dim, minimum occurence, sg/cbow, ngram     
+
+Short Slides[https://docs.google.com/presentation/d/1heJwOcYDDTqfs5-UGcZHw-3Y2v38jPh5YuAzRpVLZvA/edit#slide=id.p]  
 
 ---
 ### First : pip install -r requirements.txt
