@@ -1,5 +1,8 @@
-# About...
-Evaluate Various Embeddings(derived from common hyperparmeter combos) by Sentiment Analysis task
+## About...
+Evaluate Various Embeddings(derived from common hyperparmeter combos)   
+by Sentiment Analysis task  
+Short Slides[https://docs.google.com/presentation/d/1heJwOcYDDTqfs5-UGcZHw-3Y2v38jPh5YuAzRpVLZvA/edit#slide=id.p]
+
 ---
 ### First : pip install -r requirements.txt
 
