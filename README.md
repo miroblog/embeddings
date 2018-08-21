@@ -1,5 +1,5 @@
 ## About...
-Evaluate Various Embeddings(derived from common hyperparmeter combos)   
+Evaluate Word2Vec, Fasttext, Glove  (unit, window size, embedding dim, var: sg/cbow, ngram)   
 by Sentiment Analysis task  
 Short Slides[https://docs.google.com/presentation/d/1heJwOcYDDTqfs5-UGcZHw-3Y2v38jPh5YuAzRpVLZvA/edit#slide=id.p]
 
